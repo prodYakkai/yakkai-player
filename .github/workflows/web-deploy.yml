@@ -1,4 +1,4 @@
-name: GitHub Pages
+name: Build and Deploy to S3
 
 on:
   push:
@@ -37,7 +37,7 @@ jobs:
       run: npm run build
 
     - name: Copy files
-      run: mv -r ./dist/yakkai-player/browser/* ./dist/yakkai-player/
+      run: mv ./dist/yakkai-player/browser/* ./dist/yakkai-player/
 
     - name: Deploy
       if: success()
