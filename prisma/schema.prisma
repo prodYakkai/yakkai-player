@@ -1,0 +1,116 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+model Event {
+  id          String  @id @default(auto()) @map("_id") @db.ObjectId
+  name        String
+  description String?
+
+  streams      Stream[]
+  categories   Category[]
+  destinations ReservedDestination[]
+  archived     Boolean               @default(false)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Stream {
+  id         String @id @default(auto()) @map("_id") @db.ObjectId
+  eventId    String @db.ObjectId
+  categoryId String @db.ObjectId
+
+  srsIngestId String? @unique
+  ingestKey   String  @unique @default(uuid())
+  viewKey     String  @unique @default(uuid())
+
+  ingestProtected Boolean @default(false)
+  viewProtected   Boolean @default(false)
+
+  description String?
+  name        String  @unique
+
+  ingestMethod IngestMethod @default(UNKNOWN)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  viewers  Viewer[]
+  category Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  event    Event    @relation(fields: [eventId], references: [id], onDelete: Cascade)
+
+  destination ReservedDestination?
+}
+
+model ReservedDestination {
+  id String @id @default(auto()) @map("_id") @db.ObjectId
+
+  streamId String? @unique @db.ObjectId
+  stream   Stream? @relation(fields: [streamId], references: [id], onDelete: Cascade)
+
+  eventId String @db.ObjectId
+  event   Event  @relation(fields: [eventId], references: [id], onDelete: Cascade)
+
+  name        String  @unique
+  description String?
+
+  createdAt DateTime @default(now())
+}
+
+model Category {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  name      String
+  eventId   String   @db.ObjectId
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  event   Event    @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  streams Stream[]
+}
+
+model Viewer {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  streamId    String   @db.ObjectId
+  srsClientId String
+  ip          String
+  createdAt   DateTime @default(now())
+  stream      Stream   @relation(fields: [streamId], references: [id], onDelete: Cascade)
+}
+
+model AuditTrail {
+  id        String           @id @default(auto()) @map("_id") @db.ObjectId
+  action    AuditTrailAction
+  userId    String
+  createdAt DateTime         @default(now())
+}
+
+enum IngestMethod {
+  RTMP
+  WHIP
+  SRT
+  UNKNOWN
+}
+
+enum AuditTrailAction {
+  Login
+  GenerateKey
+  RotateClientKey
+  GenerateMasterSheet
+  RevokeKey
+  KickStream
+  KickClient
+}

@@ -1,0 +1,25 @@
+<nz-alert
+nzType="error"
+nzMessage="Error"
+[nzDescription]="generalError"
+nzShowIcon
+*ngIf="generalError"
+></nz-alert>
+<div nz-row>
+    <div nz-col nzSpan="24">
+        <p>Welcome to Stream Play</p>
+    </div>
+    <div nz-col nzSpan="24">
+        <div nz-row>
+            <div nz-col nzSpan="12">
+                <nz-input-group [nzPrefix]="prefixTemplateUser">
+                    <input type="text" nz-input placeholder="Enter stream key" [(ngModel)]="keyInput" />
+                    <button nz-button nzType="primary" nzSearch (click)="linkToPlayer()">Start Stream</button>
+                  </nz-input-group>
+                  <ng-template #prefixTemplateUser><span nz-icon nzType="key"></span></ng-template>
+            </div>
+        </div>    
+    </div>
+   
+</div>
+

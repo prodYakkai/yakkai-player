@@ -1,0 +1,30 @@
+<div nz-row>
+  <div nz-col nzSpan="8">
+    <p>Current Build: <b>{{ currentEnv }}</b>, API Gateway: <b>{{ APIPingStatus }}</b></p> 
+    <p>
+        Stream LB Host: {{ environment.streamServer }}
+        <br>
+        Ingest Src Host: {{ environment.ingestSrcServer }}
+    </p>
+    </div>
+    <div nz-col nzSpan="8">
+       <p>
+        Stream LB IP: {{ streamServerIP || '...'}}
+        <br>
+        Ingest Src IP: {{ ingestSrcServerIP || '...' }}
+       </p>
+    </div>
+    <div nz-col nzSpan="8">
+        <p>ISP Prefix: <b>{{ myIP | iPBlockSlice:24 || '0.0.0.0' }}</b></p>
+    </div>
+    <div nz-col nzSpan="24">
+      Test Status:
+      <nz-tag *ngFor="let item of testItems | keyvalue"
+        [nzColor]="item.value === 'O' ? 'green' : item.value === 'X' ? 'red' : 'blue'"
+      >{{item.key}}</nz-tag>
+    </div>
+    <div nz-col nzSpan="24">
+      <h3>Logging</h3>
+      <pre>{{logging}}</pre>  
+    </div>
+  </div>

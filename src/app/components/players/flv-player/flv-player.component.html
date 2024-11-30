@@ -1,0 +1,90 @@
+<div *ngIf="!streamErrorOccurred">
+  <div style="margin: 16px 0">
+    <nz-alert
+      *ngIf="isSRTOrigin"
+      nzType="warning"
+      nzCloseable="true"
+      nzMessage="Warning! SRT Origin Stream"
+      [nzDescription]="srtOriginWarningTemplate"
+      nzShowIcon="true"
+    ></nz-alert>
+    <ng-template #srtOriginWarningTemplate>
+      <p>
+        You are viewing a stream that is being broadcasted using SRT. This
+        protocol that is known to cause decoding/frame pacing issues with the
+        player.
+        <br />
+        Please try to use the "Quality" profile first, then experiment
+        with "Normal" profile, success rate varies depending on your network condition.
+        <br />
+        If your player freezes/lock-up/errored, is mostly likely due to this
+        issue. Please consider using the WebRTC player.
+      </p>
+    </ng-template>
+  </div>
+  <div id="videocontainer">
+    <video autoplay muted controls playsinline #player (click)="handleVideoElmClick()"></video>
+  </div>
+  <div style="margin-top: 16px">
+    <div>
+      <span>Latency Control: </span>
+      <nz-radio-group
+        [(ngModel)]="latencyControl"
+        nzButtonStyle="solid"
+        (ngModelChange)="handleReload()"
+      >
+        <label nz-radio-button nzValue="slow">Quality</label>
+        <label nz-radio-button nzValue="normal">Normal</label>
+        <label nz-radio-button nzValue="ultra" [nzDisabled]="isSRTOrigin">
+          Ultra Low
+          <span
+            nz-icon
+            nzType="question"
+            nzTheme="outline"
+            *ngIf="isSRTOrigin"
+            nz-tooltip
+            nzTooltipPlacement="bottom"
+            nzTooltipTitle="Ultra Low Latency is disabled when origin is streaming using SRT. This is a known issue with the protocol."
+          >
+            (Why Disabled?)
+          </span>
+        </label>
+      </nz-radio-group>
+    </div>
+    <div>
+      <p>
+        Rx: {{ playerStats?.speed | number : "1.0-0" }}Kbps, Dropped:
+        {{ playerStats?.droppedFrames | number }} f
+      </p>
+      <p>
+        Codec: {{ playerMediaInfo?.videoCodec || "???" }}&commat;{{
+          playerMediaInfo?.videoDataRate | number
+        }}kb/{{ playerMediaInfo?.audioCodec }}
+      </p>
+    </div>
+  </div>
+</div>
+
+<div style="text-align: center" *ngIf="isStreamLoading">
+  <div>
+    <p>Loading Stream ...</p>
+    <nz-spin [nzSize]="'large'"></nz-spin>
+  </div>
+</div>
+
+<div style="text-align: center" *ngIf="streamErrorOccurred">
+  <nz-alert
+    nzType="error"
+    nzMessage="Error"
+    [nzAction]="actionTemplate"
+    [nzDescription]="serverErrorTemplate"
+  ></nz-alert>
+  <ng-template #serverErrorTemplate>
+    <p>Failed to load stream feed, please try again later.</p>
+  </ng-template>
+  <ng-template #actionTemplate>
+    <button nz-button nzSize="small" nzType="primary" (click)="handleReload()">
+      Retry
+    </button>
+  </ng-template>
+</div>

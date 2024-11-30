@@ -1,0 +1,86 @@
+<nz-alert
+  nzType="error"
+  nzMessage="Error"
+  [nzDescription]="generalErrorMessage"
+  nzShowIcon
+  *ngIf="generalErrorMessage"
+></nz-alert>
+
+<div nz-row style="text-align: center" *ngIf="streamParams !== null">
+  <nz-col nzSpan="24">
+    <h1>
+      <span (contextmenu)="handleShowStreamUrl($event)">Viewing</span>
+      {{ streamParams.event.name }}/{{ streamParams.category.name }}/{{
+        streamParams.name
+      }}
+    </h1>
+  </nz-col>
+  <nz-col nzSpan="16" nzOffset="4" style="padding: 10px 0px">
+    <app-whep-player
+      *ngIf="streamType === 'whep'"
+      [streamParams]="streamParams"
+      (streamUrlEvent)="onPlayerStreamUrlChange($event)"
+    ></app-whep-player>
+    <app-flv-player
+      *ngIf="streamType === 'flv'"
+      [streamParams]="streamParams"
+      (streamUrlEvent)="onPlayerStreamUrlChange($event)"
+    ></app-flv-player>
+  </nz-col>
+  <nz-col nzSpan="24">
+    <div>
+      <h4>Playback Options</h4>
+      <nz-radio-group
+        [ngModel]="streamType"
+        nzButtonStyle="solid"
+        (ngModelChange)="onPlayerTypeChange($event)"
+      >
+        <label nz-radio-button nzValue="whep">WebRTC</label>
+        <label nz-radio-button nzValue="flv" nzDisabled="false">FLV</label>
+      </nz-radio-group>
+    </div>
+  </nz-col>
+</div>
+
+<div nz-row style="text-align: center" *ngIf="isLoading">
+  <div nz-col [nzSpan]="24">
+    <p>Fetching Stream Config...</p>
+    <nz-spin [nzSize]="'large'"></nz-spin>
+  </div>
+</div>
+
+<div nz-row style="text-align: center" *ngIf="!isLoading && isError">
+  <div nz-col [nzSpan]="24">
+    <nz-alert
+      nzType="error"
+      nzMessage="Error"
+      [nzAction]="actionTemplate"
+      [nzDescription]="
+        errorCode === -2 ? serverErrorTemplate : noStreamErrorTemplate
+      "
+    ></nz-alert>
+    <ng-template #serverErrorTemplate>
+      <p>
+        Failed to get stream feed, please check your view key and try again.
+      </p>
+    </ng-template>
+    <ng-template #noStreamErrorTemplate>
+      <p>
+        The stream you are trying to view is not available.
+        <br />
+        Please try again later.
+      </p>
+    </ng-template>
+    <ng-template #actionTemplate>
+      <button
+        nz-button
+        nzSize="small"
+        nzType="primary"
+        *ngIf="errorCode === -1"
+        (click)="handleReload()"
+      >
+        Retry
+      </button>
+    </ng-template>
+  </div>
+</div>

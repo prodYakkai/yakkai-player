@@ -1,0 +1,57 @@
+<div>
+  <div style="margin: 16px 0">
+    <nz-alert
+      *ngIf="isIncompatibleBrowser"
+      nzType="warning"
+      nzCloseable="true"
+      nzMessage="Warning! Incompatible Browser"
+      [nzDescription]="incompatibleBrowserTemplate"
+      nzShowIcon="true"
+    ></nz-alert>
+    <ng-template #incompatibleBrowserTemplate>
+      <p>
+        Your browser is not officially supported by this protocol. If errors occur, please use the latest version of
+        Chrome or Chromium-based browsers.
+      </p>
+    </ng-template>
+  </div>
+  <div id="videocontainer">
+    <video autoplay muted controls playsinline #player></video>
+  </div>
+  <div style="margin-top: 16px;">
+    <p>
+      RTT: {{ rtt }}ms, Bitrate: {{ bitrate | number }}kbps, Lost Packet: A:
+      {{ packetsLost.audio | number }} V: {{ packetsLost.video | number }}
+    </p>
+  </div>
+</div>
+
+<div *ngIf="isStreamLoading">
+  <div style="text-align: center">
+    <p>Loading Stream ...</p>
+    <div>
+      <p *ngIf="loadingStatus === 0">Connecting to WebRTC Peer...</p>
+      <p *ngIf="loadingStatus === 1">Initializing WebRTC Peer ...</p>
+      <p *ngIf="loadingStatus === 2">Waiting for stream to start ...</p>
+      <p *ngIf="loadingStatus === 3">Waiting for first frame ...</p>
+    </div>
+    <nz-spin [nzSize]="'large'" style="padding: 16px"></nz-spin>
+  </div>
+</div>
+
+<div style="text-align: center" *ngIf="!isStreamLoading && streamErrorOccurred">
+  <nz-alert
+    nzType="error"
+    nzMessage="Error"
+    [nzAction]="actionTemplate"
+    [nzDescription]="serverErrorTemplate"
+  ></nz-alert>
+  <ng-template #serverErrorTemplate>
+    <p>Failed to load stream feed, please try again later.</p>
+  </ng-template>
+  <ng-template #actionTemplate>
+    <button nz-button nzSize="small" nzType="primary" (click)="handleReload()">
+      Retry
+    </button>
+  </ng-template>
+</div>

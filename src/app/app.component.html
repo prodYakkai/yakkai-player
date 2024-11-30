@@ -1,0 +1,15 @@
+<nz-layout>
+  <nz-header>
+    <div class="logo">
+      Yakkai Play
+    </div>
+    <ul nz-menu nzTheme="dark" nzMode="horizontal">
+      <li nz-menu-item [routerLink]="['/']" nzMatchRouter="/">Home</li>
+    </ul>
+  </nz-header>
+  <nz-content>
+    <router-outlet></router-outlet>
+  </nz-content>
+  <nz-divider></nz-divider>
+  <nz-footer>Yakkai Player &copy; 2025 Prod Yakkai, a subsidiary of blackcompany.tv</nz-footer>
+</nz-layout>

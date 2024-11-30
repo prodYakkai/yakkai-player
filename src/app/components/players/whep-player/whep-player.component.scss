@@ -1,0 +1,36 @@
+#videocontainer {
+  position: relative;
+  padding-bottom: 50%;
+  height: 45vh;
+}
+
+video {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: #ccc; /* Random BG colour for unloaded video elements */
+}
+
+.display-none{
+  display: none;
+}
+
+.fill-page {
+  height: 100vh;
+  width: 100vw;
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 1000;
+}
+
+.fill-page::-webkit-media-controls-timeline,
+.fill-page::-webkit-media-controls-timeline {
+    display: none;
+}
+.fill-page::-webkit-media-controls,
+.fill-page::-webkit-media-controls {
+    display: none;
+}
