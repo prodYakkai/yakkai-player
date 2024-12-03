@@ -1,6 +1,7 @@
 {
   "name": "yakkai-player",
   "version": "2.0.0",
+  "description": "Yakkai Strteam Player",
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
@@ -11,7 +12,12 @@
     "prisma-generate": "prisma generate",
     "test": "ng test"
   },
-  "private": true,
+  "private": false,
+  "license": "Apache-2.0",
+  "bugs": {
+    "url": "https://github.com/prodyakkai/yakkai-player/issues"
+  },
+  "homepage": "https://github.com/prodyakkai/yakkai-player#readme",
   "dependencies": {
     "@angular/animations": "^17.0.0",
     "@angular/common": "^17.0.0",
