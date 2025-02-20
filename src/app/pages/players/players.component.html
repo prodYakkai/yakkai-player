@@ -15,7 +15,7 @@
       }}
     </h1>
   </nz-col>
-  <nz-col nzSpan="16" nzOffset="4" style="padding: 10px 0px">
+  <nz-col [nzXl]="{span: 16, push:4 }" [nzXs]="{span: 24}">
     <app-whep-player
       *ngIf="streamType === 'whep'"
       [streamParams]="streamParams"

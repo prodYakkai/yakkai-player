@@ -28,6 +28,11 @@ declare module '@eyevinn/webrtc-player' {
 interface RTCMediaReport {
   kind: 'audio' | 'video';
   packetsLost: number;
+  jitter: number;
+  totalProcessingDelay: number;
+  framesPerSecond: number;
+  framesDropped: number;
+  framesDecoded: number;
 }
 
 @Component({
@@ -51,6 +56,7 @@ export class WhepPlayerComponent implements OnInit, OnDestroy, AfterViewInit {
   public isStreamLoading: boolean = true;
   private playerInstance: WebRTCPlayer | null = null;
 
+  // stats
   public packetsLost: { audio: number; video: number } = {
     audio: 0,
     video: 0,
@@ -58,6 +64,11 @@ export class WhepPlayerComponent implements OnInit, OnDestroy, AfterViewInit {
   public loadingStatus = 0; // 0 = connecting to peer, 1 = initing peer, 2 = setting up channels, 3 =
   public bitrate: number = -1; // ms
   public rtt: number = -1; // kbps
+  public droppedFrames: number = -1; // frames
+  public FPS: number = -1; // frames
+  public jitter: number = -1; // ms
+  public calculatedDelay: number = -1; // ms
+  public framesDecoded: number = -1; // frames
 
   public isIncompatibleBrowser = false;
 
@@ -144,6 +155,12 @@ export class WhepPlayerComponent implements OnInit, OnDestroy, AfterViewInit {
       if (report.kind === 'video' || report.kind === 'audio') {
         this.packetsLost[report.kind] = report.packetsLost;
       }
+      if (report.kind === 'video') {
+        this.FPS = Math.round(report.framesPerSecond);
+        this.droppedFrames = report.framesDropped;
+        this.jitter = Math.round(report.jitter * 1000);
+        this.calculatedDelay = ((report.totalProcessingDelay * 1000) / report.framesDecoded) || 0;
+      }
     });
 
     if (this.streamParams.embed) {
@@ -161,7 +178,12 @@ export class WhepPlayerComponent implements OnInit, OnDestroy, AfterViewInit {
   getStreamUrl(streamParams: StreamWithKeyParams, eip?: string): string {
     const url = new URL(`https://${environment.streamServer}/rtc/v1/whep/`);
     url.searchParams.set('app', `live`);
-    url.searchParams.set('stream', `${streamParams.category.name}-${streamParams.name}`);
+    if (streamParams.name === 'demo') {
+      url.searchParams.set('stream', 'demo');
+      url.searchParams.set('vhost', 'playback');
+    }else{
+      url.searchParams.set('stream', `${streamParams.category.name}-${streamParams.name}`);
+    }
     url.searchParams.set('expire', streamParams.expire.toString());
     url.searchParams.set('sign', streamParams.sign);
     url.searchParams.set('start', streamParams.start.toString());

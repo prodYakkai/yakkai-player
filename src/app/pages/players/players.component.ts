@@ -14,6 +14,8 @@ import { FlvPlayerComponent } from '../../components/players/flv-player/flv-play
 import { WhepPlayerComponent } from '../../components/players/whep-player/whep-player.component';
 import { NzModalModule, NzModalService } from 'ng-zorro-antd/modal';
 import { StreamWithKeyParams } from '../../types/Stream';
+import { IngestMethod } from '@prisma/client';
+import { DemoStreamParams } from '../../const';
 
 @Component({
   selector: 'app-players',
@@ -107,6 +109,11 @@ export class PlayersComponent implements OnInit, OnDestroy {
     this.errorCode = 0;
     this.isError = false;
     this.streamParams = null;
+    if (key === 'demo') {
+      this.streamParams = DemoStreamParams;
+      this.isLoading = false;
+      return;
+    }
 
     this.feedService.getFeedByKey(key).subscribe({
       next: (data: any) => {

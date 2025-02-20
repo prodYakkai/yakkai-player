@@ -23,8 +23,51 @@ model Event {
   destinations ReservedDestination[]
   archived     Boolean               @default(false)
 
+  branding   EventBranding?
+  brandingId String?        @db.ObjectId
+
+  ads   EventAd?
+  adsId String? @db.ObjectId
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  userIds String[] @db.ObjectId
+  users   User[]   @relation(fields: [userIds], references: [id])
+}
+
+model EventBranding {
+  id      String  @id @default(auto()) @map("_id") @db.ObjectId
+  eventId String  @unique @db.ObjectId
+  logoUrl    String?
+  faviconUrl String?
+
+  customFooter String?
+
+  primaryColor   String?
+  secondaryColor String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  event Event @relation(fields: [eventId], references: [id], onDelete: Cascade)
+}
+
+
+model EventAd {
+  id      String  @id @default(auto()) @map("_id") @db.ObjectId
+  eventId String  @unique @db.ObjectId
+
+  imageURL String?
+
+  position AdPosition @default(UNKNOWN)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  event Event @relation(fields: [eventId], references: [id], onDelete: Cascade)
 }
 
 model Stream {
@@ -32,12 +75,15 @@ model Stream {
   eventId    String @db.ObjectId
   categoryId String @db.ObjectId
 
-  srsIngestId String? @unique
-  ingestKey   String  @unique @default(uuid())
-  viewKey     String  @unique @default(uuid())
+  srsIngestStreamId String?
+  srsIngestClientId String?
+  ingestKey         String  @unique @default(uuid())
+  viewKey           String  @unique @default(uuid())
 
   ingestProtected Boolean @default(false)
   viewProtected   Boolean @default(false)
+
+  viewLocked Boolean @default(false)
 
   description String?
   name        String  @unique
@@ -53,6 +99,8 @@ model Stream {
   event    Event    @relation(fields: [eventId], references: [id], onDelete: Cascade)
 
   destination ReservedDestination?
+
+  StreamHistory StreamHistory[]
 }
 
 model ReservedDestination {
@@ -66,13 +114,14 @@ model ReservedDestination {
 
   name        String  @unique
   description String?
+  redirect    Boolean @default(false)
 
   createdAt DateTime @default(now())
 }
 
 model Category {
   id        String   @id @default(auto()) @map("_id") @db.ObjectId
-  name      String
+  name      String   @unique
   eventId   String   @db.ObjectId
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -85,10 +134,40 @@ model Category {
 model Viewer {
   id          String   @id @default(auto()) @map("_id") @db.ObjectId
   streamId    String   @db.ObjectId
-  srsClientId String
-  ip          String
+  srsClientId String   @unique
   createdAt   DateTime @default(now())
-  stream      Stream   @relation(fields: [streamId], references: [id], onDelete: Cascade)
+
+  stream Stream @relation(fields: [streamId], references: [id], onDelete: Cascade)
+}
+
+model User {
+  id           String @id @default(auto()) @map("_id") @db.ObjectId
+  email        String @unique
+  thirdPartyId String @unique
+  name         String
+
+  admin    Boolean @default(false)
+  disabled Boolean @default(false)
+  groups Boolean @default(false)
+
+  eventIds String[] @db.ObjectId
+  events   Event[]  @relation(fields: [eventIds], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model StreamHistory {
+  id String @id @default(auto()) @map("_id") @db.ObjectId
+
+  srsClientId  String       @unique
+  ingestMethod IngestMethod
+
+  createdAt DateTime  @default(now())
+  stoppedAt DateTime?
+
+  streamId String @db.ObjectId
+  stream   Stream @relation(fields: [streamId], references: [id], onDelete: Cascade)
 }
 
 model AuditTrail {
@@ -113,4 +192,12 @@ enum AuditTrailAction {
   RevokeKey
   KickStream
   KickClient
+}
+
+enum AdPosition {
+  UNKNOWN
+  TOP
+  BOTTOM
+  LEFT
+  RIGHT
 }

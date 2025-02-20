@@ -20,8 +20,8 @@
   </div>
   <div style="margin-top: 16px;">
     <p>
-      RTT: {{ rtt }}ms, Bitrate: {{ bitrate | number }}kbps, Lost Packet: A:
-      {{ packetsLost.audio | number }} V: {{ packetsLost.video | number }}
+      RTT: {{ rtt }}ms (J: {{jitter}} ms), Bitrate: {{ bitrate | number }}kbps &#64; {{ FPS }} fps, Lost Packet: A:
+      {{ packetsLost.audio | number }} V: {{ packetsLost.video | number }}, Est. Delay: {{ calculatedDelay | number : '1.0-1' }}ms
     </p>
   </div>
 </div>
