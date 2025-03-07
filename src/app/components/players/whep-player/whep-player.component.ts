@@ -159,7 +159,7 @@ export class WhepPlayerComponent implements OnInit, OnDestroy, AfterViewInit {
         this.FPS = Math.round(report.framesPerSecond);
         this.droppedFrames = report.framesDropped;
         this.jitter = Math.round(report.jitter * 1000);
-        this.calculatedDelay = ((report.totalProcessingDelay * 1000) / report.framesDecoded) || 0;
+        this.calculatedDelay = (((report.totalProcessingDelay * 1000) / report.framesDecoded) + this.rtt) || 0;
       }
     });
 
