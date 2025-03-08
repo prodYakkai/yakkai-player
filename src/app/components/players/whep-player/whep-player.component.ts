@@ -176,6 +176,12 @@ export class WhepPlayerComponent implements OnInit, OnDestroy, AfterViewInit {
   };
 
   getStreamUrl(streamParams: StreamWithKeyParams, eip?: string): string {
+    if (!streamParams) {
+      throw new Error('No stream params provided');
+    }
+    if (streamParams.directLink) {
+      return streamParams.directLink;
+    }
     const url = new URL(`https://${environment.streamServer}/rtc/v1/whep/`);
     url.searchParams.set('app', `live`);
     if (streamParams.name === 'demo') {

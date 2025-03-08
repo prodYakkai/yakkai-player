@@ -30,7 +30,7 @@ export class DiagnosticsComponent implements AfterContentInit, OnDestroy{
     this.logging = 'Diagnostics started at ' + new Date().toLocaleString() + '\n';
     this.getIPData();
     this.resolveServerIP();
-    this.pingTimeTest(environment.apiServer + '/ping');
+    this.pingTimeTest(environment.apiServer + '/ping', 'API Server');
     this.pingTimeTest(environment.streamServer);
     this.pingTimeTest(environment.ingestSrcServer);
   }
@@ -49,7 +49,7 @@ export class DiagnosticsComponent implements AfterContentInit, OnDestroy{
 
   public logging: string = '';
 
-  public testItems = {
+  public testItems: { [key: string]: string } = {
     'API Server': 'P',
     'Stream Server': 'P',
     'Ingest Server': 'P',
@@ -94,14 +94,20 @@ export class DiagnosticsComponent implements AfterContentInit, OnDestroy{
     });
   }
 
-  pingTimeTest = (url: string) => {
+  pingTimeTest = (url: string, updateEntry?: string) => {
     this.logging += 'Pinging ' + url + '\n';
     this.ref.detectChanges();
     const start = performance.now();
     this.http.options(url).subscribe((data: any) => {
       this.logging += `Ping (${url}) successful in ${Math.round(performance.now() - start)} ms\n`;
+      if (updateEntry){
+        this.testItems[updateEntry] = 'O';
+      }
     }, (error) => {
       this.logging += `Ping (${url}) failed in ${Math.round(performance.now() - start)} ms\n`;
+      if (updateEntry){
+        this.testItems[updateEntry] = 'X';
+      }
     });
   }
 

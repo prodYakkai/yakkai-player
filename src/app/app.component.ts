@@ -4,6 +4,7 @@ import { RouterModule, RouterOutlet } from '@angular/router';
 import { NzLayoutModule } from 'ng-zorro-antd/layout';
 import { NzMenuModule } from 'ng-zorro-antd/menu';
 import { NzDividerModule } from 'ng-zorro-antd/divider';
+import { BrandingService } from './services/branding.service';
 @Component({
   selector: 'app-root',
   standalone: true,
@@ -13,9 +14,25 @@ import { NzDividerModule } from 'ng-zorro-antd/divider';
 })
 export class AppComponent implements OnInit{
 
-  constructor() { }
+  constructor(
+    private brandingService: BrandingService
+  ) { }
 
   ngOnInit(): void {
-    
+    this.brandingService.getEventId().subscribe(
+      (eventId) => {
+        if (eventId) {
+          this.loadBranding(eventId);
+        }
+      }
+    );
+  }
+
+  loadBranding(eventId: string) {
+    this.brandingService.getBranding(eventId).subscribe(
+      (res) => {
+        console.log(res);
+      }
+    );
   }
 }

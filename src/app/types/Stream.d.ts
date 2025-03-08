@@ -29,6 +29,7 @@ interface StreamPlayParams {
   expire: number;
   sign: string;
   embed?: boolean;
+  directLink?: string;
 }
 
 interface StreamURLParams {

@@ -30,6 +30,7 @@ import { NzAlertModule } from 'ng-zorro-antd/alert';
 export class HomeComponent implements OnInit {
   public keyInput: string = '';
   public generalError: string = '';
+  public urlInput: string = '';
 
   constructor(
     private router: Router,
@@ -51,5 +52,12 @@ export class HomeComponent implements OnInit {
     this.router.navigate(['/play'], {
       queryParams: { key: this.keyInput },
     });
+  }
+
+  localPlay(type: 'flv' | 'whep') {
+    this.router.navigate(['/play'], {
+      queryParams: { key: 'local', url: encodeURIComponent(this.urlInput), type: type },
+    });
+
   }
 }

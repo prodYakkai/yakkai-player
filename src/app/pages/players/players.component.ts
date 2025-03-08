@@ -15,7 +15,8 @@ import { WhepPlayerComponent } from '../../components/players/whep-player/whep-p
 import { NzModalModule, NzModalService } from 'ng-zorro-antd/modal';
 import { StreamWithKeyParams } from '../../types/Stream';
 import { IngestMethod } from '@prisma/client';
-import { DemoStreamParams } from '../../const';
+import { DemoStreamParams, generateLocalStreamParams } from '../../const';
+import { BrandingService } from '../../services/branding.service';
 
 @Component({
   selector: 'app-players',
@@ -65,7 +66,8 @@ export class PlayersComponent implements OnInit, OnDestroy {
     private router: Router,
     private feedService: FeedService,
     private messageService: NzMessageService,
-    private modalService: NzModalService
+    private modalService: NzModalService,
+    private brandingService: BrandingService
   ) {}
 
   ngOnInit(): void {
@@ -88,6 +90,16 @@ export class PlayersComponent implements OnInit, OnDestroy {
     }
 
     this.embedMode = params['embed'] !== undefined;
+
+    if ( this.streamKey === 'local' && params['url'] !== undefined) {
+      let streamParams = generateLocalStreamParams(
+        'Local Stream',
+        decodeURIComponent(params['url'])
+      )
+      streamParams.embed = this.embedMode;
+      this.streamParams = streamParams;
+      return;
+    }
 
     this.loadStreamFeedConfig(key);
   };
@@ -129,6 +141,7 @@ export class PlayersComponent implements OnInit, OnDestroy {
 
         this.streamParams  = data.data;
         if (this.streamParams) {
+          this.brandingService.setEventId(this.streamParams.event.id);
           this.streamParams.embed = this.embedMode;
         }
       },

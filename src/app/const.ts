@@ -30,3 +30,20 @@ export const DemoStreamParams:StreamWithKeyParams = {
     embed: false,
     description: 'demo stream description',
 };
+
+export const generateLocalStreamParams = (streamName: string, url: string): StreamWithKeyParams => {
+  return {
+    ...DemoStreamParams,
+    name: streamName,
+    id: streamName,
+    category: {
+      ...DemoStreamParams.category,
+      name: streamName,
+    },
+    event: {
+      ...DemoStreamParams.event,
+      name: streamName,
+    },
+    directLink: url
+  };
+}

@@ -204,6 +204,9 @@ export class FlvPlayerComponent implements OnInit, OnDestroy, AfterViewInit,Afte
     if (streamParams.name === 'demo') {
       return `https://${environment.streamServer}/live/demo.flv?vhost=playback`;
     }
+    if (streamParams.directLink) {
+      return streamParams.directLink;
+    }
     //return `https://${environment.streamServer}/${streamParams.vhost}-${streamParams.room}/${streamParams.name}.flv`;
     const url = new URL(
       `https://${environment.streamServer}/live/${streamParams.category.name}-${streamParams.name}.flv`
